@@ -1,14 +1,16 @@
 import { Link } from "react-router-dom";
+import VotesBar from "./VotesBar";
 
-interface Blog {
+interface Post {
   title: string;
   author: string;
   body: string;
   id: number;
+  upvotes: number;
 }
 
 interface Props {
-  blogs: Blog[];
+  blogs: Post[];
   title?: string;
 }
 
@@ -19,9 +21,10 @@ const BlogList = ({ blogs = [], title }: Props) => {
       {blogs.map((blog) => (
         <div className="blog-preview" key={blog.id}>
           <Link to={`/blogs/${blog.id}`}>
-            <h2>{blog.title}</h2>
+            <h2 className="blog-preview-title">{blog.title}</h2>
             <p>Written by {blog.author}</p>
           </Link>
+          <VotesBar id={blog.id} startUpvotes={blog.upvotes} />
         </div>
       ))}
     </div>

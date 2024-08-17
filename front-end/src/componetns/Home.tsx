@@ -1,14 +1,28 @@
 import BlogList from "./BlogList";
 import useFetch from "../hooks/useFetch";
+import { useEffect } from "react";
+
+interface Post {
+  title: string;
+  author: string;
+  body: string;
+  id: number;
+  upvotes: number;
+}
 
 const Home = () => {
   const {
     data: blogs,
     isPending,
     error,
-  } = useFetch({
+    getData,
+  } = useFetch<Post>({
     url: "http://127.0.0.1:3000/api/posts",
   });
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   return (
     <div className="home">

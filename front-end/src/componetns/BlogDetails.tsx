@@ -1,33 +1,43 @@
 import { useParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 
-interface BlogParams {
+interface PostParams {
   id: string;
 }
 
-const BlogDetails = () => {
-  const { id } = useParams<BlogParams>();
+interface Post {
+  title: string;
+  author: string;
+  body: string;
+  id: number;
+  upvotes: number;
+}
+
+const PostDetails = () => {
+  const { id } = useParams<PostParams>(); // gets the url param from /posts/:id
   const {
-    data: blogs,
+    data: posts,
     error,
     isPending,
-  } = useFetch({ url: `http://localhost:3000/api/posts/${id}` });
+    getData,
+  } = useFetch<Post>({ url: `http://localhost:3000/api/posts/${id}` });
 
-  const blog = blogs[0];
+  getData();
+  const post = posts[0];
 
   return (
     <div className="blog-details">
       {isPending && <div>Loading...</div>}
       {error && <div>{error}</div>}
-      {blog && (
+      {post && (
         <article>
-          <h2>{blog.title}</h2>
-          <p>Written by {blog.author}</p>
-          <div>{blog.body}</div>
+          <h2>{post.title}</h2>
+          <p>Written by {post.author}</p>
+          <div>{post.body}</div>
         </article>
       )}
     </div>
   );
 };
 
-export default BlogDetails;
+export default PostDetails;

@@ -1,48 +1,46 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
-interface Props {
+interface Props<returnType> {
   url: string;
 }
 
-interface Blog {
-  title: string;
-  author: string;
-  body: string;
-  id: number;
-}
-
-const useFetch = ({ url }: Props) => {
-  const [data, setData] = useState<Blog[]>([]);
-  const [isPending, setIsPending] = useState(true);
+const useFetch = <returnType,>({ url }: Props<returnType>) => {
+  const [data, setData] = useState<returnType[]>([]);
+  const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const abortConst = new AbortController();
+  const getData = async () => {
+    const abortConst = new AbortController(); // for when component is closed while fetch still runnning
+    setIsPending(true);
 
-    fetch(url, { signal: abortConst.signal })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`could not fetch the data, Error: ${res.statusText}`);
-        }
-
-        return res.json();
-      })
-      .then((data) => {
-        setError(null);
-        setData(data);
-        setIsPending(false);
-      })
-      .catch((err) => {
-        if (err.namme !== "AbortError") {
-          setError(err.message); // the .message is very importent here as to not to render an object but string
-          setIsPending(false);
-        }
+    try {
+      const res = await fetch(url, {
+        signal: abortConst.signal,
+        method: "GET",
       });
 
-    return () => abortConst.abort();
-  }, [url]);
+      if (!res.ok) {
+        throw new Error(`could not fetch the data, Error: ${res.statusText}`);
+      }
 
-  return { data, isPending, error };
+      const data = await res.json();
+
+      setError(null);
+      setData(data);
+      setIsPending(false);
+    } catch (err: any) {
+      if (err.name !== "AbortError") {
+        // AbortError happens only when the component is closed/unaloceted before end of fetch
+        setError(err.message); // the .message is very importent here as to not to render an object but string
+      }
+    } finally {
+      setIsPending(false);
+    }
+
+    return () => abortConst.abort();
+  };
+
+  return { data, isPending, error, getData };
 };
 
 export default useFetch;

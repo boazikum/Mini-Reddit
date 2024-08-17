@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/api/posts', async (req, res) => {
-    let posts = await queryDb("SELECT * FROM full_post_info;");
+    let posts = await queryDb("SELECT * FROM full_post_info order by upvotes desc;");
     console.log(posts)
     res.send(posts)
 })
@@ -63,6 +63,26 @@ app.post('/api/comments', async (req, res) => {
     const query = `INSERT INTO public.comments(postid, authorid, body)VALUES ($1, $2, $3) returning id, authorid, title, body;`;
     let newComment = await queryDb(query, [parseInt(req.body.postid), parseInt(req.body.authorid).title, req.body.body]);
     res.send(newComment);
+})
+
+app.get('/api/upvotes/:id', async (req,res) => {
+    let posts = await queryDb("SELECT upvotes FROM public.posts WHERE id = $1;", [parseInt(req.params.id)]);
+    console.log(posts)
+    res.send(posts)
+})
+
+app.put('/api/upvote/:id', async (req, res) => {
+    const incrementBy = req.body.incrementBy ? req.body.incrementBy : 0
+    const query = `UPDATE public.posts SET upvotes = upvotes + ${incrementBy} where id = $1 returning upvotes;`;
+    console.log(query)
+    let newUpvotes = await queryDb(query, [parseInt(req.params.id)]);
+    res.send(newUpvotes);
+})
+
+app.put('/api/downvote/:id', async (req, res) => {
+    const query = `UPDATE public.posts SET upvotes = upvotes - 1 where id = $1 returning upvotes;`;
+    let newUpvotes = await queryDb(query, [parseInt(req.params.id)]);
+    res.send(newUpvotes);
 })
 
    
