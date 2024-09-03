@@ -1,5 +1,7 @@
 import { useParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
+import { useEffect } from "react";
+import VotesBar from "./VotesBar";
 
 interface PostParams {
   id: string;
@@ -22,7 +24,10 @@ const PostDetails = () => {
     getData,
   } = useFetch<Post>({ url: `http://localhost:3000/api/posts/${id}` });
 
-  getData();
+  useEffect(() => {
+    getData();
+  }, []);
+
   const post = posts[0];
 
   return (
@@ -30,11 +35,14 @@ const PostDetails = () => {
       {isPending && <div>Loading...</div>}
       {error && <div>{error}</div>}
       {post && (
-        <article>
-          <h2>{post.title}</h2>
-          <p>Written by {post.author}</p>
-          <div>{post.body}</div>
-        </article>
+        <>
+          <article>
+            <h2>{post.title}</h2>
+            <p>Written by {post.author}</p>
+            <div>{post.body}</div>
+          </article>
+          <VotesBar id={parseInt(id)} startUpvotes={post.upvotes} />
+        </>
       )}
     </div>
   );

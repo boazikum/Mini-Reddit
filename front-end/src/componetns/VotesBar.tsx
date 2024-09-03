@@ -19,17 +19,6 @@ const VotesBar = ({ id, startUpvotes }: Props) => {
     url: `http://127.0.0.1:3000/api/upvotes/${id}`,
   });
 
-  /*useEffect(() => {
-    getData();
-  }, [selectedButton]);
-
-  useEffect(() => {
-    console.log(data);
-    if (data.length > 0) {
-      setUpvotes(data[0].upvotes);
-    }
-  }, [data, isPending]);*/ //only works sometimes
-
   return (
     <div className="votesbar-conteiner">
       <Upvote
@@ -38,7 +27,7 @@ const VotesBar = ({ id, startUpvotes }: Props) => {
         setSelectedButton={setSelectedButton}
         setUpvotes={setUpvotes}
       />
-      <h2>{upvotes}</h2>
+      <p className="upvote-number">{upvotes}</p>
       <Downvote
         postId={id}
         selectedButton={selectedButton}

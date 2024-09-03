@@ -22,7 +22,7 @@ const Upvote = ({
     url: `http://127.0.0.1:3000/api/upvote/${postId}`,
   });
 
-  const hanleUpvote = () => {
+  const handleUpvote = () => {
     switch (selectedButton) {
       case 0:
         putData({ incrementBy: 1 });
@@ -47,9 +47,9 @@ const Upvote = ({
 
   return (
     <img
-      src="upvote_arrow.svg"
+      src="/upvote_arrow.svg"
       className={selectedButton === 1 ? "active-upvote" : "vote-img"}
-      onClick={hanleUpvote}
+      onClick={handleUpvote}
     />
   );
 };
