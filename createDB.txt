@@ -1,0 +1,68 @@
+CREATE DATABASE minireddit
+    WITH
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LOCALE_PROVIDER = 'libc'
+    CONNECTION LIMIT = -1
+    IS_TEMPLATE = False;
+
+
+CREATE TABLE public.posts
+(
+    id bigint,
+    authorid bigint,
+    title "char",
+    body "char",
+    PRIMARY KEY (id),
+    CONSTRAINT authorid FOREIGN KEY (authorid)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.posts
+    OWNER to postgres;
+
+
+
+CREATE TABLE public.users
+(
+    id bigint,
+    name "char",
+    password "char",
+    PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.users
+    OWNER to postgres;
+
+
+CREATE TABLE public.comments
+(
+    postid bigint,
+    authorid bigint,
+    body "char",
+    upvotes bigint,
+    CONSTRAINT postid FOREIGN KEY (postid)
+        REFERENCES public.posts (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT authorid FOREIGN KEY (authorid)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+ALTER TABLE IF EXISTS public.comments
+    OWNER to postgres;
+
+ALTER TABLE public.posts ALTER id ADD GENERATED ALWAYS AS IDENTITY(START WITH 1)
+ALTER TABLE public.users ALTER id ADD GENERATED ALWAYS AS IDENTITY(START WITH 1)
+ALTER TABLE public.comments ALTER id ADD GENERATED ALWAYS AS IDENTITY(START WITH 1)

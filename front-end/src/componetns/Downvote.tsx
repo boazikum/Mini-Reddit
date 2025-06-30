@@ -18,22 +18,29 @@ const Downvote = ({
   setSelectedButton,
   setUpvotes,
 }: Props) => {
-  const { data, error, putData } = usePut<Upvotes>({
-    url: `http://127.0.0.1:3000/api/upvote/${postId}`,
-  });
+  const { data, error, putData } = usePut<Upvotes>();
 
   const handleUpvote = () => {
     switch (selectedButton) {
       case 0:
-        putData({ incrementBy: -1 });
+        putData({
+          url: `http://127.0.0.1:3000/api/upvotes/${postId}`,
+          body: { incrementBy: -1 },
+        });
         setSelectedButton(-1);
         break;
       case -1:
-        putData({ incrementBy: 1 });
+        putData({
+          url: `http://127.0.0.1:3000/api/upvotes/${postId}`,
+          body: { incrementBy: 1 },
+        });
         setSelectedButton(0);
         break;
       case 1:
-        putData({ incrementBy: -2 });
+        putData({
+          url: `http://127.0.0.1:3000/api/upvotes/${postId}`,
+          body: { incrementBy: -2 },
+        });
         setSelectedButton(-1);
         break;
     }

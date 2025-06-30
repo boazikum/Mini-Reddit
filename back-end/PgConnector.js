@@ -8,12 +8,12 @@ async function useDb(query, queryParameters=[]) {
   let results = [];
 
   try {
-    console.log("before connect");
+    //console.log("before connect");
     await client.connect();
-    console.log("after connect");
+    //console.log("after connect");
     const res = await client.query(query, queryParameters);
     results = res.rows;
-    console.log("connected, results:", results);
+    //console.log("connected, results:", results);
   } catch (err) {
     console.error(err);
   }
@@ -22,7 +22,8 @@ async function useDb(query, queryParameters=[]) {
 }
 
 const queryDb = (query, queryParameters = []) => {
-    return useDb(query, queryParameters).then(results => {
+    return useDb(query, queryParameters)
+    .then(results => {
         return results
     }).catch(err => {
         console.log(err)

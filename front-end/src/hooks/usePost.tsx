@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react";
 
-interface Props<returnType> {
+interface Props {
   url: string;
-  body?: {};
+  body?: object;
 }
 
-const usePost = <returnType,>({ url, body = {} }: Props<returnType>) => {
+const usePost = <returnType,>() => {
   const [data, setData] = useState<returnType[]>([]);
-  const [isPending, setIsPending] = useState(true);
+  const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const postData = ({ url, body = {} }: Props) => {
     const abortConst = new AbortController(); // for when component is closed while fetch still runnning
+    setIsPending(true);
 
     fetch(url, {
       signal: abortConst.signal,
@@ -19,12 +20,19 @@ const usePost = <returnType,>({ url, body = {} }: Props<returnType>) => {
       headers: { "Content-type": "application/json" },
       body: JSON.stringify(body),
     })
-      .then((res) => {
+      .then(async (res) => {
+        let response = await res.json();
         if (!res.ok) {
-          throw new Error(`could not fetch the data, Error: ${res.statusText}`);
+          if (response.message) {
+            throw new Error(response.message);
+          } else {
+            throw new Error(
+              `could not fetch the data, Error: ${res.statusText}`
+            );
+          }
         }
 
-        return res.json();
+        return response;
       })
       .then((data) => {
         setError(null);
@@ -40,9 +48,9 @@ const usePost = <returnType,>({ url, body = {} }: Props<returnType>) => {
       });
 
     return () => abortConst.abort();
-  }, [url]);
+  };
 
-  return { data, isPending, error };
+  return { data, isPending, error, postData };
 };
 
 export default usePost;

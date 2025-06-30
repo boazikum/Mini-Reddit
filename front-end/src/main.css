@@ -151,3 +151,33 @@
   font-size: 1.5em;
   font-weight: bold;
 }
+
+.login-button {
+  background: #f1356d;
+  color: #fff;
+  border: 0;
+  padding: 8px;
+  margin-left: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.loginInput {
+  margin: 8px;
+}
+
+.error {
+  color: red;
+}
+
+.logout-button {
+  background: #f1356d;
+  color: #fff;
+  border: 0;
+  padding: 8px;
+  margin-left: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}

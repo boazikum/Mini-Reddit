@@ -1,89 +1,102 @@
-const queryDb = require('./PgConnector');
 const express = require('express');
 const cors = require('cors');
+const {getAllPost, getPost, createPost, deletePost, getUsers, getUser, createUser, getComments, createComment, getUpvotes, changeUpvotes, checkLogin} = require('./repository');
 
 const app = express();
 app.use(express.json(), cors())
 
 /*app.get(), app.post(), app.put(), app.delete() */
+// req.query displays the url query aka ?id=4&sorby=id:desc
 
 app.get('/', (req, res) => {
     res.send('Hello World');
 })
 
 app.get('/api/posts', async (req, res) => {
-    let posts = await queryDb("SELECT * FROM full_post_info order by upvotes desc;");
-    console.log(posts)
-    res.send(posts)
+    res.send(await getAllPost())
 })
 
 app.get('/api/posts/:id', async (req, res) => {
-    let post = await queryDb("SELECT * FROM full_post_info where id=$1;", [req.params.id]);
-    if (post == undefined || post.length == 0){
-        res.status(404).send('Post not found');
-    }else{    
+    let post = await getPost(req.params.id);
+
+    if (post){
         res.send(post);
+    } else {    
+        res.status(404).send('Post not found');
     }
 })
 
 app.post('/api/posts', async (req, res) => {
-    const query = `INSERT INTO public.posts(authorid, title, body)VALUES ($1, $2, $3) returning id, authorid, title, body;`
-    let newPost = await queryDb(query, [parseInt(req.body.authorid, 10), req.body.title, req.body.body]);
-    res.send(newPost);
+    let newPost = await createPost(parseInt(req.body.authorid, 10), req.body.title, req.body.body)
+    
+    if (newPost){
+        res.send(newPost);
+    } else {    
+        res.status(404).send('Failed to create post');
+    }
 })
 
 app.delete('/api/posts/:id', async (req, res) => {
-    let post = await queryDb("DELETE FROM posts where id=$1 returning id, authorid, title, body;", [req.params.id])
-    if (post == undefined || post.length == 0){
-        res.status(404).send('Post not found');
-    }else{    
+    let post = await deletePost(req.params.id)
+
+    if (post){
         res.send(post);
+    } else {    
+        res.status(404).send('Failed to delete post');
     }
 })
 
 app.get('/api/users', async (req, res) => {
-    let posts = await queryDb("SELECT * FROM public.users;");
-    console.log(posts)
-    res.send(posts)
+    res.send(await getUsers())
 })
 
 app.get('/api/users/:id', async (req, res) => {
-    let post = await queryDb("SELECT * FROM public.users where id=$1;", [req.params.id]);
-    if (post == undefined || post.length == 0){
-        res.status(404).send('Post not found');
-    }else{    
-        res.send(post);
+    let user = await getUser(req.params.id);
+
+    if (user){
+        res.send(user);
+    } else {    
+        res.status(404).send('Failed to find user');
     }
 })
-app.get('/api/comments', (req, res) => {
-    res.send(req.query); // displays the url query aka ?id=4&sorby=id:desc
+
+app.post('api/user', async (req, res) => {
+    let newUser = await createUser(req.body.username, req.body.password);
+
+    if (newUser){
+        res.send(newUser);
+    } else {    
+        res.status(404).send('Failed to create user');
+    }
+})
+
+app.get('/api/comments/:id', async (req, res) => { 
+    res.send(await getComments(parseInt(req.params.id)));
 })
 
 app.post('/api/comments', async (req, res) => {
-    const query = `INSERT INTO public.comments(postid, authorid, body)VALUES ($1, $2, $3) returning id, authorid, title, body;`;
-    let newComment = await queryDb(query, [parseInt(req.body.postid), parseInt(req.body.authorid).title, req.body.body]);
+    let newComment = await createComment(parseInt(req.body.postid), parseInt(req.body.authorid), req.body.body)
     res.send(newComment);
 })
 
 app.get('/api/upvotes/:id', async (req,res) => {
-    let posts = await queryDb("SELECT upvotes FROM public.posts WHERE id = $1;", [parseInt(req.params.id)]);
-    console.log(posts)
-    res.send(posts)
+    let upvotes = await getUpvotes(parseInt(req.params.id))
+    res.send(upvotes)
 })
 
-app.put('/api/upvote/:id', async (req, res) => {
-    const incrementBy = req.body.incrementBy ? req.body.incrementBy : 0
-    const query = `UPDATE public.posts SET upvotes = upvotes + ${incrementBy} where id = $1 returning upvotes;`;
-    console.log(query)
-    let newUpvotes = await queryDb(query, [parseInt(req.params.id)]);
-    res.send(newUpvotes);
+app.put('/api/upvotes/:id', async (req, res) => {
+    let upvotes = await changeUpvotes(parseInt(req.params.id), parseInt(req.body.incrementBy))
+    res.send(upvotes)
 })
 
-app.put('/api/downvote/:id', async (req, res) => {
-    const query = `UPDATE public.posts SET upvotes = upvotes - 1 where id = $1 returning upvotes;`;
-    let newUpvotes = await queryDb(query, [parseInt(req.params.id)]);
-    res.send(newUpvotes);
+app.post('/api/user/login', async (req, res) => {
+    let userId = await checkLogin(req.body.username, req.body.password);
+    
+    if (userId && userId.length > 0){
+        res.send(userId);
+    } else {
+        res.status(400).send({message: "username and password don't match"});
+    }
 })
-
-   
+ 
 app.listen(3000, () => console.log('listening on port 3000'));

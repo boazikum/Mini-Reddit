@@ -1,28 +1,31 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import { useUserContext } from "./userContext";
+import usePost from "../hooks/usePost";
 
 const Create = () => {
   const [title, setTitle] = useState<string>("");
   const [body, setBody] = useState<string>("");
-  const [author, setAuthor] = useState<string>("mario");
-  const [isPending, setIsPending] = useState<boolean>(false);
+  const { data, isPending, error, postData } = usePost();
   const history = useHistory();
+  const { user } = useUserContext();
+  const [canSubmit, setCanSubmit] = useState<boolean>(user.id ? true : false);
+
+  useEffect(() => {
+    setCanSubmit(Boolean(user.id && !isPending));
+  }, [user, isPending]);
+
+  useEffect(() => {
+    if (data.length) {
+      history.go(-1);
+    }
+  }, [data]);
 
   const handleSubmit = (e: FormEvent) => {
-    setIsPending(true);
     e.preventDefault(); // stops the defualt action for submit which is refresh
-    const blog = { title, body, author };
+    const blog = { title, body, authorid: user.id };
 
-    fetch("http://127.0.0.1:5000/blogs", {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: JSON.stringify(blog),
-    }).then(() => {
-      console.log("new blog added");
-      setIsPending(false);
-      history.push("/");
-      history.go(-1);
-    });
+    postData({ body: blog, url: "http://127.0.0.1:3000/api/posts" });
   };
 
   return (
@@ -42,12 +45,11 @@ const Create = () => {
           value={body}
           onChange={(e) => setBody(e.target.value)}
         ></textarea>
-        <label>Blog author:</label>
-        <select value={author} onChange={(e) => setAuthor(e.target.value)}>
-          <option value={"mario"}>mario</option>
-          <option value={"yoshi"}>yoshi</option>
-        </select>
-        {!isPending && <button>submit blog</button>}
+        {canSubmit && <button>submit blog</button>}
+        {!user.id && (
+          <p className="error">must be logged in to create a new blog</p>
+        )}
+        {error && <p className="error">{error}</p>}
         {isPending && <p>Creating new post</p>}
       </form>
     </div>
