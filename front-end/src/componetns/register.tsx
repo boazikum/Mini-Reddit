@@ -8,7 +8,7 @@ interface id {
   id: number;
 }
 
-function LoginPage() {
+function RegisterPage() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const { data, error, postData } = usePost<id>();
@@ -17,12 +17,10 @@ function LoginPage() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    // not using a useState cause state updates are async
     const hashedPassword = CryptoJs.SHA256(password).toString();
-    // console.log({ username, password, hashedPassword });
 
     postData({
-      url: "http://127.0.0.1:3000/api/user/login",
+      url: "http://127.0.0.1:3000/api/user",
       body: {
         username: username,
         password: hashedPassword,
@@ -31,6 +29,7 @@ function LoginPage() {
   };
 
   useEffect(() => {
+    console.log(data);
     if (data.length) {
       setUser({ username: username, id: data[0].id });
     }
@@ -38,7 +37,7 @@ function LoginPage() {
 
   return (
     <>
-      <h2>Login Form:</h2>
+      <h2>register Form:</h2>
       <form onSubmit={(e) => handleSubmit(e)}>
         <label>username:</label>
         <input
@@ -59,14 +58,11 @@ function LoginPage() {
         />
         <br />
         {error && <p className="error">{error}</p>}
-        <button className="login-button">Login</button>
+        <button className="login-button">create user</button>
       </form>
       {Boolean(data.length) && <Redirect to="/" />}
-
-      <br />
-      <a href="/register">not a member? create an account</a>
     </>
   );
 }
 
-export default LoginPage;
+export default RegisterPage;

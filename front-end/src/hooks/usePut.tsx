@@ -14,18 +14,18 @@ const usePut = <returnType,>() => {
     const abortConst = new AbortController(); // for when component is closed while fetch still runnning
     setIsPending(true);
 
-    await fetch(url, {
+    fetch(url, {
       signal: abortConst.signal,
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     })
-      .then((res) => {
+      .then(async (res) => {
         if (!res.ok) {
-          throw new Error(`could not fetch the data, Error: ${res.statusText}`);
+          throw new Error(await res.text());
         }
 
-        return res.json();
+        return await res.json();
       })
       .then((data) => {
         setError(null);

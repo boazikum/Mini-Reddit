@@ -60,13 +60,17 @@ app.get('/api/users/:id', async (req, res) => {
     }
 })
 
-app.post('api/user', async (req, res) => {
-    let newUser = await createUser(req.body.username, req.body.password);
+app.post('/api/user', async (req, res) => {
+    try {
+        let newUser = await createUser(req.body.username, req.body.password);
 
-    if (newUser){
-        res.send(newUser);
-    } else {    
-        res.status(404).send('Failed to create user');
+        if (newUser){
+            res.send(newUser);
+        } else {    
+            res.status(400).send('Failed to create user');
+        }
+    } catch (error) {
+        res.status(400).send(error.message);
     }
 })
 

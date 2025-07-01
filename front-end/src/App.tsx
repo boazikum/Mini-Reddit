@@ -6,6 +6,7 @@ import BlogDetails from "./componetns/BlogDetails";
 import NotFound from "./componetns/NotFound";
 import LoginPage from "./componetns/LoginPage";
 import { UserProvider } from "./componetns/userContext";
+import RegisterPage from "./componetns/register";
 
 function App() {
   return (
@@ -26,6 +27,9 @@ function App() {
               </Route>
               <Route path="/login">
                 <LoginPage />
+              </Route>
+              <Route path="/register">
+                <RegisterPage />
               </Route>
               <Route path="*">
                 <NotFound />

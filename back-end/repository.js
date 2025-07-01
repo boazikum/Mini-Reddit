@@ -47,11 +47,20 @@ async function getUser(userId) {
 }
 
 async function createUser(username, hashedPassword) {
-    const query = "INSERT INTO public.users(name, password) VALUES ($1, $2) returning id;";
-    const queryParameters = [username, hashedPassword];
-    let userId = await queryDb(query, queryParameters);
+    try {
+        const query = "INSERT INTO public.users(username, password) VALUES ($1, $2) returning id;";
+        const queryParameters = [username, hashedPassword];
+        let userId = await queryDb(query, queryParameters);
 
-    return userId;
+        return userId;
+    } catch (error) {
+        if (error.message.includes('already exists')){
+            throw new Error('username already exists');
+        } else {
+            throw new Error(error);
+        }
+    }
+    
 }
 
 async function createComment(postId, authorId, body) {
