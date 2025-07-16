@@ -74,13 +74,18 @@ app.post('/api/user', async (req, res) => {
     }
 })
 
-app.get('/api/comments/:id', async (req, res) => { 
-    res.send(await getComments(parseInt(req.params.id)));
+app.get('/api/comments/:postId', async (req, res) => { 
+    res.send(await getComments(parseInt(req.params.postId)));
 })
 
 app.post('/api/comments', async (req, res) => {
-    let newComment = await createComment(parseInt(req.body.postid), parseInt(req.body.authorid), req.body.body)
-    res.send(newComment);
+    console.table(req.body)
+    try {
+        let newComment = await createComment(parseInt(req.body.postId), parseInt(req.body.authorId), req.body.body)
+        res.send(newComment);   
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
 })
 
 app.get('/api/upvotes/:id', async (req,res) => {

@@ -1,15 +1,15 @@
 import { useState, useEffect, useCallback } from "react";
 
-interface Props<returnType> {
+interface Props {
   url: string;
 }
 
-const useFetch = <returnType,>({ url }: Props<returnType>) => {
+const useFetch = <returnType,>() => {
   const [data, setData] = useState<returnType[]>([]);
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const getData = async () => {
+  const getData = async ({ url }: Props) => {
     const abortConst = new AbortController(); // for when component is closed while fetch still runnning
     setIsPending(true);
 

@@ -163,6 +163,13 @@
   font-size: 16px;
 }
 
+.login-button:disabled {
+  background: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .loginInput {
   margin: 8px;
 }
@@ -180,4 +187,40 @@
   border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
+}
+
+.modal {
+  position: fixed;
+  top: 40vh;
+  left: 4vw;
+  transform: translate(-40%, -40%);
+  max-width: 20rem;
+  padding: 2rem;
+  border: 0;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0.5rem 0.25rem hsl(0 0% 0% / 10%);
+  margin: auto;
+  background: #fff;
+}
+
+.modal-close-btn {
+  font-size: 1em;
+  position: absolute;
+  top: .5em;
+  right: .5em;
+}
+
+.comment {
+  padding: 2vw;
+  box-shadow: 0 0 0.5rem 0.25rem hsl(0 0% 0% / 30%);
+  max-width: max-content;
+  border-radius: 8px;
+}
+
+.commentSection {
+  border-top: 2px solid #f1356d;
+  padding: 2vw;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
 }

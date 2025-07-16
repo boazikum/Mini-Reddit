@@ -13,7 +13,7 @@ async function useDb(query, queryParameters=[]) {
     results = res.rows;
   } catch (err) {
     await client.end();
-    throw new Error(err.detail);
+    throw new Error(err);
   }
 
   await client.end();

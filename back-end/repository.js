@@ -72,7 +72,7 @@ async function createComment(postId, authorId, body) {
 }
 
 async function getComments(postId) {
-    const query = `SELECT * FROM public.comments WHERE postid = $1;`;
+    const query = `SELECT id, body, upvotes FROM public.comments WHERE postid = $1;`;
     const queryParameters = [postId];
     let comments = await queryDb(query, queryParameters);
 

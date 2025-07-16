@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import { useEffect } from "react";
 import VotesBar from "./VotesBar";
+import CommentSection from "./CommentSection";
 
 interface PostParams {
   id: string;
@@ -17,15 +18,10 @@ interface Post {
 
 const PostDetails = () => {
   const { id } = useParams<PostParams>(); // gets the url param from /posts/:id
-  const {
-    data: posts,
-    error,
-    isPending,
-    getData,
-  } = useFetch<Post>({ url: `http://localhost:3000/api/posts/${id}` });
+  const { data: posts, error, isPending, getData } = useFetch<Post>();
 
   useEffect(() => {
-    getData();
+    getData({ url: `http://localhost:3000/api/posts/${id}` });
   }, []);
 
   const post = posts[0];
@@ -44,6 +40,7 @@ const PostDetails = () => {
           <VotesBar id={parseInt(id)} startUpvotes={post.upvotes} />
         </>
       )}
+      <CommentSection postId={parseInt(id)} />
     </div>
   );
 };

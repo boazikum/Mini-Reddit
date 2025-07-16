@@ -29,7 +29,6 @@ function RegisterPage() {
   };
 
   useEffect(() => {
-    console.log(data);
     if (data.length) {
       setUser({ username: username, id: data[0].id });
     }
